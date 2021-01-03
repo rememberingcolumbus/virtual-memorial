@@ -1,21 +1,24 @@
 <template>
-  <div id="cbus-memorial">
-    <img src="./assets/CBUS-memorial-photo.jpg" alt="Columbus Skyline" />
-    <span
-      v-for="point in getPoints()"
-      class="dot"
-      :style="calcPosition()"
-    ></span>
+  <div id="cbus-memorial" ref="app">
+    <img 
+    :src="cbus" alt="Columbus Skyline" width="100%" />
+    <div v-for="(star, i) in stars" :key="i"
+      :class="star.class"
+      :style="`left:${star.style.left}px; top:${star.style.top}px;`"></div>
+    <span>Total Deaths: {{totalDeaths}}</span>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import cbus from "./assets/CBUS-memorial-photo.jpg";
 
 export default {
-  name: "cbus-memorial",
+  name: 'cbus-remembers',
   data() {
     return {
+      cbus: cbus,
+      dataURL: 'http://covid.maxheckel.me/api/counties/deaths?counties=',
       counties: [
         "Franklin",
         "Delaware",
@@ -30,61 +33,63 @@ export default {
         "Pickaway",
         "Union",
       ],
+      deathJSON: [],
       totalDeaths: 0,
       newDeaths: 0,
+      stars: [],
     };
   },
   methods: {
     createStar(x, y, type) {
-      var elem = document.createElement("div");
+      var elem =this.$el.createElement("div");
       elem.setAttribute("class", type);
       elem.setAttribute("style", "left:" + x + "px;top:" + y + "px;");
-      document.getElementsByTagName("body")[0].appendChild(elem);
+      this.$el.getElementByName("cbus-memorial")[0].appendChild(elem);
       return elem;
     },
-    anotherStar(typeOfStar) {
-      this.createStar(
-        Math.floor(Math.random() * skyWidth),
-        Math.floor(Math.random() * skyHeight),
-        typeOfStar
-      );
+    randomX() {
+      return Math.floor(Math.random() * this.skyWidth);
     },
-    drawStars() {
-      for (let i = 0; i < this.totalDeaths.value - this.newDeaths; i++) {
-        this.anotherStar("old-star");
-      }
-      for (let i = 0; i < this.newDeaths; i++) {
-        this.anotherStar("new-star");
-      }
+    randomY() {
+      return Math.floor(Math.random() * this.skyHeight * .65);
+    }
+  },
+  computed: {
+    skyHeight() {
+      return this.$refs.app.clientHeight;
     },
-    getCounties() {
-      return this.counties.join(",");
-    },
-    getPoints() {
-      return _.range(0, 100);
-    },
-    calcPosition() {
-      return {
-        top: _.random(0, 230) + "px",
-        left: _.random(0, 210) + "px",
-      };
-    },
+    skyWidth() {
+      return this.$refs.app.clientWidth;
+    }
   },
   async created() {
+    const proxyURL = 'https://cors-anywhere.herokuapp.com/';
+    const requestedURL = this.dataURL+this.counties.join(",");
     const response = await axios.get(
-      `http://covid.maxheckel.me/api/counties/deaths?counties=${this.getCounties()}`
-    );
-    response.data;
+      proxyURL+requestedURL);
+
+    this.totalDeaths = response.data.total;
+    
+    for (let i = 0; i < this.totalDeaths; i++) {
+      this.stars.push({
+        class: 'old-star',
+        style: {
+          left: this.randomX(),
+          top: this.randomY()
+        }
+      })
+    }
   },
 };
 </script>
 
 <style>
 .old-star {
-    position: relative;
+    position: absolute;
     width: 2px;
     height: 2px;
     background: white;
+    z-index: 20;
 }
 
 .new-star {
@@ -92,11 +97,6 @@ export default {
   width: 3px;
   height: 3px;
   background: yellow;
-}
-
-img {
-  width: 80%;
-  height: 30%;
 }
 
 div {

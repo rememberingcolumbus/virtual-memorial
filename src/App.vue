@@ -63,10 +63,11 @@ export default {
     }
   },
   async created() {
-    const proxyURL = 'https://cors-anywhere.herokuapp.com/';
+    // const proxyURL = 'https://cors-anywhere.herokuapp.com/';
     const requestedURL = this.dataURL+this.counties.join(",");
     const response = await axios.get(
-      proxyURL+requestedURL);
+      // proxyURL+
+      requestedURL);
 
     this.totalDeaths = response.data.total;
     

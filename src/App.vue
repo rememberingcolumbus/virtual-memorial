@@ -2,8 +2,8 @@
 	<div id="cbus-memorial" ref="app">
 		<img :src="cbus" alt="Columbus Skyline" width="100%" />
 		<div
-			v-for="(star, i) in stars"
-			:key="i"
+			v-for="star in stars"
+			:key="star.date"
 			:class="star.class"
 			:style="`left:${star.style.left}px; top:${star.style.top}px;`"
 		></div>
@@ -36,40 +36,61 @@ export default {
 				"Union"
 			],
 			totalDeaths: 0,
-			dailyDeathsByCounty: [],
+			dailyDeaths: [],
 			stars: []
 		};
 	},
 	computed: {
-		dailyDeaths() {
-			const mergeDailyDeathsObj = {};
-			this.dailyDeathsByCounty.forEach(county => {
+		dateCountTotals() {
+			let cumulativeTotal = 0;
+
+			return this.dailyDeaths.map(day => {
+				cumulativeTotal += day.count;
+				return {
+					date: day.date,
+					newDeaths: day.count,
+					cumulativeDeaths: cumulativeTotal
+				};
+			});
+		},
+		skyHeight() {
+			return this.$refs.app.clientHeight;
+		},
+		skyWidth() {
+			return this.$refs.app.clientWidth;
+		}
+	},
+	methods: {
+		addCountyToCentralOhioTotals(dailyDeathsByCounty) {
+			const totalsForCentralOhioObj = {};
+
+			dailyDeathsByCounty.forEach(county => {
 				for (let [key, value] of Object.entries(county)) {
-					if (!mergeDailyDeathsObj[key]) {
-						mergeDailyDeathsObj[key] = value;
+					if (!totalsForCentralOhioObj[key]) {
+						totalsForCentralOhioObj[key] = value;
 					} else {
-						mergeDailyDeathsObj[key] += value;
+						totalsForCentralOhioObj[key] += value;
 					}
 				}
 			});
 
+			return totalsForCentralOhioObj;
+		},
+		compressDeathData(data) {
+			const dateDeathCountByCounty = this.getDaysFromData(data.counties);
+			const centralOhioTotalsObj = this.addCountyToCentralOhioTotals(
+				dateDeathCountByCounty
+			);
+
 			const result = [];
-			for (let [key, value] of Object.entries(mergeDailyDeathsObj)) {
+			for (let [key, value] of Object.entries(centralOhioTotalsObj)) {
 				result.push({
 					date: key,
 					count: value
 				});
 			}
 			return this.sortDaysAscending(result);
-		}
-	},
-	skyHeight() {
-		return this.$refs.app.clientHeight;
-	},
-	skyWidth() {
-		return this.$refs.app.clientWidth;
-	},
-	methods: {
+		},
 		countyReducer(dailyCountArray) {
 			if (dailyCountArray) {
 				return dailyCountArray.reduce((acc, day) => {
@@ -90,11 +111,16 @@ export default {
 			this.$el.getElementByName("cbus-memorial")[0].appendChild(elem);
 			return elem;
 		},
+		getDaysFromData(counties) {
+			return counties.map(county => {
+				return this.countyReducer(county.days);
+			});
+		},
 		randomX() {
 			return Math.floor(Math.random() * this.skyWidth);
 		},
 		randomY() {
-			return Math.floor(Math.random() * this.skyHeight * 0.65);
+			return Math.floor(Math.random() * this.skyHeight * 0.7);
 		},
 		sortDaysAscending(array) {
 			return array.sort((a, b) => Date(a.date) - Date(b.date));
@@ -106,9 +132,8 @@ export default {
 		const response = await axios.get(proxyURL + requestedURL);
 
 		this.totalDeaths = response.data.total;
-		this.dailyDeathsByCounty = response.data.counties.map(county => {
-			return this.countyReducer(county.days);
-		});
+
+		this.dailyDeaths = this.compressDeathData(response.data);
 
 		for (let i = 0; i < this.totalDeaths; i++) {
 			this.stars.push({

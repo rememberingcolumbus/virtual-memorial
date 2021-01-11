@@ -1,18 +1,22 @@
 <template>
 	<div id="cbus-memorial" ref="app">
 		<img :src="cbus" alt="Columbus Skyline" width="100%" />
+		<div>
+		<span
+			><output for="date-selector">{{ displayDate }}</output></span
+		>
+		<span>New Deaths: {{displayNewDeaths}} </span>
+		<span>Cumulative Deaths: {{displayCumulativeDeaths}}</span>
+		</div>
 		<input
 			v-model="selectedDay"
 			type="range"
 			min="0"
-			:max="dateCountTotals.length-1"
+			:max="dateCountTotals.length - 1"
 			id="date-selector"
 			step="1"
 			@change="selectDate()"
 		/>
-		<!-- <span
-			><output for="date-selector">{{ "day.date" }}</output></span
-		> -->
 		<div
 			v-for="star in stars"
 			:key="star.date"
@@ -65,6 +69,16 @@ export default {
 				};
 			});
 		},
+		displayDate() {
+			const chosenDate = new Date(this.dateCountTotals[this.selectedDay]?.date);
+			return chosenDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+		},
+		displayNewDeaths() {
+			return this.dateCountTotals[this.selectedDay]?.newDeaths;
+		},
+		displayCumulativeDeaths() {
+			return this.dateCountTotals[this.selectedDay]?.cumulativeDeaths;
+		},
 		skyHeight() {
 			return this.$refs.app.clientHeight;
 		},
@@ -75,7 +89,11 @@ export default {
 	methods: {
 		selectDate() {
 			this.stars = [];
-			for (let i = 0; i < this.dateCountTotals[this.selectedDay].cumulativeDeaths; i++) {
+			for (
+				let i = 0;
+				i < this.dateCountTotals[this.selectedDay].cumulativeDeaths;
+				i++
+			) {
 				this.stars.push({
 					class: "old-star",
 					style: {
@@ -128,13 +146,6 @@ export default {
 			}
 			return [];
 		},
-		// createStar(x, y, type) {
-		// 	var elem = this.$el.createElement("div");
-		// 	elem.setAttribute("class", type);
-		// 	elem.setAttribute("style", "left:" + x + "px;top:" + y + "px;");
-		// 	this.$el.getElementByName("cbus-memorial")[0].appendChild(elem);
-		// 	return elem;
-		// },
 		getDaysFromData(counties) {
 			return counties.map(county => {
 				return this.countyReducer(county.days);
@@ -147,7 +158,7 @@ export default {
 			return Math.floor(Math.random() * this.skyHeight * 0.7);
 		},
 		sortDaysAscending(array) {
-			return array.sort((a, b) => Date(a.date) - Date(b.date));
+			return array.sort((a, b) => new Date(a.date) - new Date(b.date));
 		}
 	},
 	async created() {

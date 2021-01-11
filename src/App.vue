@@ -1,13 +1,24 @@
 <template>
 	<div id="cbus-memorial" ref="app">
 		<img :src="cbus" alt="Columbus Skyline" width="100%" />
+		<input
+			v-model="selectedDay"
+			type="range"
+			min="0"
+			:max="dateCountTotals.length-1"
+			id="date-selector"
+			step="1"
+			@change="selectDate()"
+		/>
+		<!-- <span
+			><output for="date-selector">{{ "day.date" }}</output></span
+		> -->
 		<div
 			v-for="star in stars"
 			:key="star.date"
 			:class="star.class"
 			:style="`left:${star.style.left}px; top:${star.style.top}px;`"
 		></div>
-		<span>Total Deaths: {{ totalDeaths }}</span>
 	</div>
 </template>
 
@@ -37,7 +48,8 @@ export default {
 			],
 			totalDeaths: 0,
 			dailyDeaths: [],
-			stars: []
+			stars: [],
+			selectedDay: 0
 		};
 	},
 	computed: {
@@ -61,6 +73,18 @@ export default {
 		}
 	},
 	methods: {
+		selectDate() {
+			this.stars = [];
+			for (let i = 0; i < this.dateCountTotals[this.selectedDay].cumulativeDeaths; i++) {
+				this.stars.push({
+					class: "old-star",
+					style: {
+						left: this.randomX(),
+						top: this.randomY()
+					}
+				});
+			}
+		},
 		addCountyToCentralOhioTotals(dailyDeathsByCounty) {
 			const totalsForCentralOhioObj = {};
 
@@ -104,13 +128,13 @@ export default {
 			}
 			return [];
 		},
-		createStar(x, y, type) {
-			var elem = this.$el.createElement("div");
-			elem.setAttribute("class", type);
-			elem.setAttribute("style", "left:" + x + "px;top:" + y + "px;");
-			this.$el.getElementByName("cbus-memorial")[0].appendChild(elem);
-			return elem;
-		},
+		// createStar(x, y, type) {
+		// 	var elem = this.$el.createElement("div");
+		// 	elem.setAttribute("class", type);
+		// 	elem.setAttribute("style", "left:" + x + "px;top:" + y + "px;");
+		// 	this.$el.getElementByName("cbus-memorial")[0].appendChild(elem);
+		// 	return elem;
+		// },
 		getDaysFromData(counties) {
 			return counties.map(county => {
 				return this.countyReducer(county.days);
@@ -134,16 +158,6 @@ export default {
 		this.totalDeaths = response.data.total;
 
 		this.dailyDeaths = this.compressDeathData(response.data);
-
-		for (let i = 0; i < this.totalDeaths; i++) {
-			this.stars.push({
-				class: "old-star",
-				style: {
-					left: this.randomX(),
-					top: this.randomY()
-				}
-			});
-		}
 	}
 };
 </script>

@@ -1,28 +1,43 @@
 <template>
-	<div id="cbus-memorial" ref="app">
-		<img :src="cbus" alt="Columbus Skyline" width="100%" />
-		<div>
-		<span
-			><output for="date-selector">{{ displayDate }}</output></span
-		>
-		<span>New Deaths: {{displayNewDeaths}} </span>
-		<span>Cumulative Deaths: {{displayCumulativeDeaths}}</span>
-		</div>
-		<input
-			v-model="selectedDay"
-			type="range"
-			min="0"
-			:max="dateCountTotals.length - 1"
-			id="date-selector"
-			step="1"
-			@change="selectDate()"
-		/>
-		<div
-			v-for="star in stars"
-			:key="star.date"
-			:class="star.class"
-			:style="`left:${star.style.left}px; top:${star.style.top}px;`"
-		></div>
+	<div id="app">
+		<v-app id="cbus-remembers-memorial">
+			<v-card class="mx-auto" elevation="3">
+				<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
+				<v-card-title class="d-flex justify-space-between">
+					<v-col class="text-center"><span>Date</span></v-col>
+					<v-col class="text-center"><span>New Deaths</span></v-col>
+					<v-col class="text-center"><span>Cumulative Deaths</span></v-col>
+				</v-card-title>
+				<v-card-subtitle class="d-flex justify-space-between">
+					<v-col class="text-center"
+						><span class="title">{{ displayDate }}</span></v-col
+					>
+					<v-col class="text-center"
+						><span class="title">{{ displayNewDeaths }}</span></v-col
+					>
+					<v-col class="text-center"
+						><span class="title">{{ displayCumulativeDeaths }}</span></v-col
+					>
+				</v-card-subtitle>
+				<v-container width="80%">
+					<v-slider
+						v-model="selectedDay"
+						:color="color"
+						track-color="grey"
+						min="0"
+						:max="dateCountTotals.length - 1"
+						@change="selectDate()"
+					>
+					</v-slider>
+				</v-container>
+				<div
+					v-for="star in stars"
+					:key="star.date"
+					:class="star.class"
+					:style="`left:${star.style.left}px; top:${star.style.top}px;`"
+				></div>
+			</v-card>
+		</v-app>
 	</div>
 </template>
 
@@ -35,6 +50,7 @@ export default {
 	data() {
 		return {
 			cbus: cbus,
+			color: "blue",
 			dataURL: "http://covid.maxheckel.me/api/counties/deaths?counties=",
 			counties: [
 				"Franklin",
@@ -71,7 +87,11 @@ export default {
 		},
 		displayDate() {
 			const chosenDate = new Date(this.dateCountTotals[this.selectedDay]?.date);
-			return chosenDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+			return chosenDate.toLocaleDateString("en-US", {
+				year: "numeric",
+				month: "long",
+				day: "numeric"
+			});
 		},
 		displayNewDeaths() {
 			return this.dateCountTotals[this.selectedDay]?.newDeaths;
@@ -80,10 +100,10 @@ export default {
 			return this.dateCountTotals[this.selectedDay]?.cumulativeDeaths;
 		},
 		skyHeight() {
-			return this.$refs.app.clientHeight;
+			return this.$refs.cbus.clientHeight;
 		},
 		skyWidth() {
-			return this.$refs.app.clientWidth;
+			return this.$refs.cbus.clientWidth;
 		}
 	},
 	methods: {
@@ -159,6 +179,12 @@ export default {
 		},
 		sortDaysAscending(array) {
 			return array.sort((a, b) => new Date(a.date) - new Date(b.date));
+		},
+		increment() {
+			this.selectedDay++;
+		},
+		decrement() {
+			this.selectedDay--;
 		}
 	},
 	async created() {

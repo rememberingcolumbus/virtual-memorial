@@ -1,6 +1,5 @@
 <template>
-	<div id="app">
-		<v-app id="cbus-remembers-memorial">
+		<v-app id="app">
 			<v-card class="mx-auto" elevation="3">
 				<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
 				<v-card-title class="d-flex justify-space-between">
@@ -38,7 +37,6 @@
 				></div>
 			</v-card>
 		</v-app>
-	</div>
 </template>
 
 <script>

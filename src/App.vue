@@ -1,7 +1,15 @@
 <template>
 	<v-app id="app">
 		<v-card class="mx-auto" elevation="3">
-			<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
+			<div>
+				<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
+				<star
+					v-for="star in stars"
+					:key="star.date"
+					:star="star"
+					:imageCBUS="$refs.cbus"
+				/>
+			</div>
 			<v-card-title class="d-flex justify-space-between">
 				<v-col class="text-center"><span>Date</span></v-col>
 				<v-col class="text-center"><span>New Deaths</span></v-col>
@@ -33,7 +41,6 @@
 					@skipToEnd="skipToEnd()"
 				/>
 			</v-container>
-			<star v-for="star in stars" :key="star.date" :star="star" />
 		</v-card>
 	</v-app>
 </template>
@@ -92,20 +99,12 @@ export default {
 			if (this.dateCountTotals.length > 0) {
 				for (let i = 0; i < newStars; i++) {
 					starsArray.push({
-						class: "new-star",
-						style: {
-							left: this.randomX(),
-							top: this.randomY()
-						}
+						class: "new-star"
 					});
 				}
 				for (let i = 0; i < totalStars - newStars; i++) {
 					starsArray.push({
-						class: "old-star",
-						style: {
-							left: this.randomX(),
-							top: this.randomY()
-						}
+						class: "old-star"
 					});
 				}
 			}
@@ -175,12 +174,6 @@ export default {
 				return this.countyReducer(county.days);
 			});
 		},
-		randomX() {
-			return Math.floor(Math.random() * this.skyWidth);
-		},
-		randomY() {
-			return Math.floor(Math.random() * this.skyHeight * 0.7);
-		},
 		sortDaysAscending(array) {
 			return array.sort((a, b) => new Date(a.date) - new Date(b.date));
 		},
@@ -200,32 +193,12 @@ export default {
 		const proxyURL = "https://cors-anywhere.herokuapp.com/";
 		const requestedURL = this.dataURL + this.counties.join(",");
 		try {
-			const response = await axios.get(requestedURL).data;
-			this.dailyDeaths = this.compressDeathData(response);
-		} catch {
+			const response = await axios.get(requestedURL);
+			this.dailyDeaths = this.compressDeathData(response.data);
+		} catch (error) {
 			const response = await axios.get(proxyURL + requestedURL);
 			this.dailyDeaths = this.compressDeathData(response.data);
 		}
-	},
-	updated() {
-		this.skyWidth = this.$refs.cbus.clientWidth;
-		this.skyHeight = this.$refs.cbus.clientHeight;
 	}
 };
 </script>
-<style>
-.old-star {
-	position: absolute;
-	width: 2px;
-	height: 2px;
-	background: white;
-	z-index: 20;
-}
-
-.new-star {
-	position: absolute;
-	width: 4px;
-	height: 4px;
-	background: yellow;
-}
-</style>

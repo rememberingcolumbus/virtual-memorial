@@ -1,49 +1,52 @@
 <template>
-		<v-app id="app">
-			<v-card class="mx-auto" elevation="3">
-				<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
-				<v-card-title class="d-flex justify-space-between">
-					<v-col class="text-center"><span>Date</span></v-col>
-					<v-col class="text-center"><span>New Deaths</span></v-col>
-					<v-col class="text-center"><span>Cumulative Deaths</span></v-col>
-				</v-card-title>
-				<v-card-subtitle class="d-flex justify-space-between">
-					<v-col class="text-center"
-						><span class="title">{{ displayDate }}</span></v-col
-					>
-					<v-col class="text-center"
-						><span class="title">{{ displayNewDeaths }}</span></v-col
-					>
-					<v-col class="text-center"
-						><span class="title">{{ displayCumulativeDeaths }}</span></v-col
-					>
-				</v-card-subtitle>
-				<v-container width="80%">
-					<v-slider
-						v-model="selectedDay"
-						:color="color"
-						track-color="grey"
-						min="0"
-						:max="dateCountTotals.length - 1"
-						@change="selectDate()"
-					>
-					</v-slider>
-				</v-container>
-				<div
-					v-for="star in stars"
-					:key="star.date"
-					:class="star.class"
-					:style="`left:${star.style.left}px; top:${star.style.top}px;`"
-				></div>
-			</v-card>
-		</v-app>
+	<v-app id="app">
+		<v-card class="mx-auto" elevation="3">
+			<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
+			<v-card-title class="d-flex justify-space-between">
+				<v-col class="text-center"><span>Date</span></v-col>
+				<v-col class="text-center"><span>New Deaths</span></v-col>
+				<v-col class="text-center"><span>Cumulative Deaths</span></v-col>
+			</v-card-title>
+			<v-card-subtitle class="d-flex justify-space-between">
+				<v-col class="text-center"
+					><span class="title">{{ displayDate }}</span></v-col
+				>
+				<v-col class="text-center"
+					><span class="title">{{ displayNewDeaths }}</span></v-col
+				>
+				<v-col class="text-center"
+					><span class="title">{{ displayCumulativeDeaths }}</span></v-col
+				>
+			</v-card-subtitle>
+			<v-container width="80%">
+				<v-slider
+					v-model="selectedDay"
+					:color="color"
+					track-color="grey"
+					min="0"
+					:max="dateCountTotals.length - 1"
+				>
+				</v-slider>
+				<controls
+					@nextDay="nextDay()"
+					@skipToStart="skipToStart()"
+					@skipToEnd="skipToEnd()"
+				/>
+			</v-container>
+			<star v-for="star in stars" :key="star.date" :star="star" />
+		</v-card>
+	</v-app>
 </template>
 
 <script>
 import axios from "axios";
 import cbus from "./assets/CBUS-memorial-photo.jpg";
+import backupData from "./deaths.json";
+import Controls from "./components/Controls.vue";
+import Star from "./components/Star.vue";
 
 export default {
+	components: { Controls, Star },
 	name: "cbus-remembers",
 	data() {
 		return {
@@ -64,9 +67,7 @@ export default {
 				"Pickaway",
 				"Union"
 			],
-			totalDeaths: 0,
 			dailyDeaths: [],
-			stars: [],
 			selectedDay: 0
 		};
 	},
@@ -83,6 +84,33 @@ export default {
 				};
 			});
 		},
+		stars() {
+			let starsArray = [];
+			const newStars = this.dateCountTotals[this.selectedDay].newDeaths;
+			const totalStars = this.dateCountTotals[this.selectedDay]
+				.cumulativeDeaths;
+			if (this.dateCountTotals.length > 0) {
+				for (let i = 0; i < newStars; i++) {
+					starsArray.push({
+						class: "new-star",
+						style: {
+							left: this.randomX(),
+							top: this.randomY()
+						}
+					});
+				}
+				for (let i = 0; i < totalStars - newStars; i++) {
+					starsArray.push({
+						class: "old-star",
+						style: {
+							left: this.randomX(),
+							top: this.randomY()
+						}
+					});
+				}
+			}
+			return starsArray;
+		},
 		displayDate() {
 			const chosenDate = new Date(this.dateCountTotals[this.selectedDay]?.date);
 			return chosenDate.toLocaleDateString("en-US", {
@@ -96,31 +124,9 @@ export default {
 		},
 		displayCumulativeDeaths() {
 			return this.dateCountTotals[this.selectedDay]?.cumulativeDeaths;
-		},
-		skyHeight() {
-			return this.$refs.cbus.clientHeight;
-		},
-		skyWidth() {
-			return this.$refs.cbus.clientWidth;
 		}
 	},
 	methods: {
-		selectDate() {
-			this.stars = [];
-			for (
-				let i = 0;
-				i < this.dateCountTotals[this.selectedDay].cumulativeDeaths;
-				i++
-			) {
-				this.stars.push({
-					class: "old-star",
-					style: {
-						left: this.randomX(),
-						top: this.randomY()
-					}
-				});
-			}
-		},
 		addCountyToCentralOhioTotals(dailyDeathsByCounty) {
 			const totalsForCentralOhioObj = {};
 
@@ -178,25 +184,35 @@ export default {
 		sortDaysAscending(array) {
 			return array.sort((a, b) => new Date(a.date) - new Date(b.date));
 		},
-		increment() {
+		nextDay() {
 			this.selectedDay++;
 		},
-		decrement() {
-			this.selectedDay--;
+		skipToStart() {
+			this.selectedDay = 0;
+		},
+		skipToEnd() {
+			this.selectedDay = this.dateCountTotals.length - 1;
 		}
 	},
 	async created() {
+		this.dailyDeaths = this.compressDeathData(backupData);
+
 		const proxyURL = "https://cors-anywhere.herokuapp.com/";
 		const requestedURL = this.dataURL + this.counties.join(",");
-		const response = await axios.get(proxyURL + requestedURL);
-
-		this.totalDeaths = response.data.total;
-
-		this.dailyDeaths = this.compressDeathData(response.data);
+		try {
+			const response = await axios.get(requestedURL).data;
+			this.dailyDeaths = this.compressDeathData(response);
+		} catch {
+			const response = await axios.get(proxyURL + requestedURL);
+			this.dailyDeaths = this.compressDeathData(response.data);
+		}
+	},
+	updated() {
+		this.skyWidth = this.$refs.cbus.clientWidth;
+		this.skyHeight = this.$refs.cbus.clientHeight;
 	}
 };
 </script>
-
 <style>
 .old-star {
 	position: absolute;
@@ -207,14 +223,9 @@ export default {
 }
 
 .new-star {
-	position: relative;
-	width: 3px;
-	height: 3px;
+	position: absolute;
+	width: 4px;
+	height: 4px;
 	background: yellow;
-}
-
-div {
-	margin: auto;
-	width: 100%;
 }
 </style>

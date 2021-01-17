@@ -4,7 +4,7 @@
 		:class="star.class"
 		:style="`left:${randomX()}px; top:${randomY()}px;`"
 	>
-		<v-icon v-if="star.class == 'new-star'" display="xs" color="yellow"
+		<v-icon v-if="star.class == 'new-star'" x-small color="yellow"
 			>mdi-star-four-points</v-icon
 		>
 	</div>

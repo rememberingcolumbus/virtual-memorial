@@ -1,15 +1,43 @@
 <template>
 	<div class="text-center">
-		<v-btn icon large @click.stop="skipToStart()">
+		<v-btn
+			icon
+			large
+			@click.stop="skipToStart()"
+			aria-label="Skip To Start"
+			role="button"
+			aria-hidden="false"
+		>
 			<v-icon>mdi-skip-backward</v-icon>
 		</v-btn>
-		<v-btn icon large @click.stop="play()">
+		<v-btn
+			icon
+			large
+			@click.stop="play()"
+			aria-label="Play"
+			role="button"
+			aria-hidden="false"
+		>
 			<v-icon color="green">mdi-play</v-icon>
 		</v-btn>
-		<v-btn icon large @click.stop="stop()">
+		<v-btn
+			icon
+			large
+			@click.stop="stop()"
+			aria-label="Stop"
+			role="button"
+			aria-hidden="false"
+		>
 			<v-icon color="red">mdi-stop</v-icon>
 		</v-btn>
-		<v-btn icon large @click.stop="skipToEnd()">
+		<v-btn
+			icon
+			large
+			@click.stop="skipToEnd()"
+			aria-label="Skip To End"
+			role="button"
+			aria-hidden="false"
+		>
 			<v-icon>mdi-skip-forward</v-icon>
 		</v-btn>
 	</div>

@@ -1,17 +1,17 @@
 <template>
 	<div>
-		<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
+		<img :src="cbusIMG" alt="Columbus Skyline" width="100%" ref="cbusIMG" />
 		<star
 			v-for="star in stars"
 			:key="star.date"
 			:star="star"
-			:imageCBUS="$refs.cbus"
+			:imageCBUS="$refs.cbusIMG"
 		/>
 	</div>
 </template>
 
 <script>
-import cbus from "../assets/CBUS-memorial-photo.jpg";
+import cbusIMG from "../assets/CBUS-memorial-photo.jpg";
 import Star from "./Star.vue";
 
 export default {
@@ -23,7 +23,7 @@ export default {
 	},
 	data() {
 		return {
-			cbus: cbus
+			cbusIMG: cbusIMG
 		};
 	},
 	computed: {

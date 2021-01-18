@@ -164,11 +164,12 @@ export default {
 		const proxyURL = "https://cors-anywhere.herokuapp.com/";
 		const requestedURL = this.dataURL + this.counties.join(",");
 		try {
-			const response = await axios.get(requestedURL);
-			this.dailyDeaths = this.compressDeathData(response.data);
-		} catch (error) {
+			// const response = await axios.get(requestedURL);
+			// this.dailyDeaths = this.compressDeathData(response.data);
 			const response = await axios.get(proxyURL + requestedURL);
 			this.dailyDeaths = this.compressDeathData(response.data);
+		} catch (error) {
+			console.error(error.message);
 		}
 	}
 };

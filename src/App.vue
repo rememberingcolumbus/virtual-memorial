@@ -1,15 +1,10 @@
 <template>
 	<v-app id="app">
 		<v-card class="mx-auto" elevation="3">
-			<div>
-				<img :src="cbus" alt="Columbus Skyline" width="100%" ref="cbus" />
-				<star
-					v-for="star in stars"
-					:key="star.date"
-					:star="star"
-					:imageCBUS="$refs.cbus"
-				/>
-			</div>
+			<starfield
+				:newDeaths="activeDay.newDeaths"
+				:totalDeaths="activeDay.cumulativeDeaths"
+			/>
 			<v-card-title class="d-flex justify-space-between">
 				<v-col class="text-center"><span>Date</span></v-col>
 				<v-col class="text-center"><span>New Deaths</span></v-col>
@@ -20,10 +15,10 @@
 					><span class="title">{{ displayDate }}</span></v-col
 				>
 				<v-col class="text-center"
-					><span class="title">{{ displayNewDeaths }}</span></v-col
+					><span class="title">{{ activeDay.newDeaths }}</span></v-col
 				>
 				<v-col class="text-center"
-					><span class="title">{{ displayCumulativeDeaths }}</span></v-col
+					><span class="title">{{ activeDay.cumulativeDeaths }}</span></v-col
 				>
 			</v-card-subtitle>
 			<v-container width="80%">
@@ -47,17 +42,15 @@
 
 <script>
 import axios from "axios";
-import cbus from "./assets/CBUS-memorial-photo.jpg";
 import backupData from "./deaths.json";
+import Starfield from "./components/Starfield.vue";
 import Controls from "./components/Controls.vue";
-import Star from "./components/Star.vue";
 
 export default {
-	components: { Controls, Star },
+	components: { Controls, Starfield },
 	name: "cbus-remembers",
 	data() {
 		return {
-			cbus: cbus,
 			color: "blue",
 			dataURL: "http://covid.maxheckel.me/api/counties/deaths?counties=",
 			counties: [
@@ -79,6 +72,9 @@ export default {
 		};
 	},
 	computed: {
+		activeDay() {
+			return this.dateCountTotals[this.selectedDay];
+		},
 		dateCountTotals() {
 			let cumulativeTotal = 0;
 
@@ -91,38 +87,13 @@ export default {
 				};
 			});
 		},
-		stars() {
-			let starsArray = [];
-			const newStars = this.dateCountTotals[this.selectedDay].newDeaths;
-			const totalStars = this.dateCountTotals[this.selectedDay]
-				.cumulativeDeaths;
-			if (this.dateCountTotals.length > 0) {
-				for (let i = 0; i < newStars; i++) {
-					starsArray.push({
-						class: "new-star"
-					});
-				}
-				for (let i = 0; i < totalStars - newStars; i++) {
-					starsArray.push({
-						class: "old-star"
-					});
-				}
-			}
-			return starsArray;
-		},
 		displayDate() {
-			const chosenDate = new Date(this.dateCountTotals[this.selectedDay]?.date);
+			const chosenDate = new Date(this.activeDay?.date);
 			return chosenDate.toLocaleDateString("en-US", {
 				year: "numeric",
 				month: "long",
 				day: "numeric"
 			});
-		},
-		displayNewDeaths() {
-			return this.dateCountTotals[this.selectedDay]?.newDeaths;
-		},
-		displayCumulativeDeaths() {
-			return this.dateCountTotals[this.selectedDay]?.cumulativeDeaths;
 		}
 	},
 	methods: {

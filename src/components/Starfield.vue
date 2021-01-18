@@ -2,9 +2,15 @@
 	<div>
 		<img :src="cbusIMG" alt="Columbus Skyline" width="100%" ref="cbusIMG" />
 		<star
-			v-for="star in stars"
-			:key="star.date"
-			:star="star"
+			v-for="(star, i) in newDeaths"
+			:key="i"
+			:star="newStar()"
+			:imageCBUS="$refs.cbusIMG"
+		/>
+		<star
+			v-for="(star, i) in totalDeaths - newDeaths"
+			:key="i + newDeaths"
+			:star="totalStar()"
 			:imageCBUS="$refs.cbusIMG"
 		/>
 	</div>
@@ -23,28 +29,16 @@ export default {
 	},
 	data() {
 		return {
-			cbusIMG: cbusIMG
+			cbusIMG: cbusIMG,
+			imageBox: {}
 		};
 	},
-	computed: {
-		stars() {
-			let starsArray = [];
-			const newStars = this.newDeaths;
-			const totalStars = this.totalDeaths;
-
-			if (this.totalDeaths > 0) {
-				for (let i = 0; i < newStars; i++) {
-					starsArray.push({
-						class: "new-star"
-					});
-				}
-				for (let i = 0; i < totalStars - newStars; i++) {
-					starsArray.push({
-						class: "old-star"
-					});
-				}
-			}
-			return starsArray;
+	methods: {
+		totalStar() {
+			return { class: "old-star" };
+		},
+		newStar() {
+			return { class: "new-star" };
 		}
 	}
 };

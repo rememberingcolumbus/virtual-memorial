@@ -1,9 +1,5 @@
 <template>
-	<div
-		:key="star.date"
-		:class="star.class"
-		:style="`left:${randomX()}px; top:${randomY()}px;`"
-	>
+	<div :class="star.class" :style="`left:${left()}px; top:${top()}px;`">
 		<v-icon v-if="star.class == 'new-star'" x-small color="yellow"
 			>mdi-star-four-points</v-icon
 		>
@@ -20,11 +16,11 @@ export default {
 		imageCBUS: HTMLImageElement
 	},
 	methods: {
-		randomX() {
-			return Math.floor(Math.random() * this.skyWidth);
+		left() {
+			return Math.floor(Math.random() * this.skyWidth) + this.leftSide;
 		},
-		randomY() {
-			return Math.floor(Math.random() * this.skyHeight * 0.7);
+		top() {
+			return Math.floor(Math.random() * this.skyHeight * 0.7) + this.topSide;
 		}
 	},
 	computed: {
@@ -33,6 +29,12 @@ export default {
 		},
 		skyHeight() {
 			return this.imageCBUS?.getBoundingClientRect().height || 400;
+		},
+		leftSide() {
+			return this.imageCBUS?.getBoundingClientRect().left || 0;
+		},
+		topSide() {
+			return this.imageCBUS?.getBoundingClientRect().top || 0;
 		}
 	}
 };

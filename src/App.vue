@@ -31,6 +31,7 @@
 				>
 				</v-slider>
 				<controls
+					:stopPlayer="selectedDay >= dateCountTotals.length - 1"
 					@nextDay="nextDay()"
 					@skipToStart="skipToStart()"
 					@skipToEnd="skipToEnd()"
@@ -149,7 +150,9 @@ export default {
 			return array.sort((a, b) => new Date(a.date) - new Date(b.date));
 		},
 		nextDay() {
-			this.selectedDay++;
+			if (this.selectedDay < this.dateCountTotals.length - 1) {
+				this.selectedDay++;
+			}
 		},
 		skipToStart() {
 			this.selectedDay = 0;

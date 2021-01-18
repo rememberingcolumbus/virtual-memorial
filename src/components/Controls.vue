@@ -46,6 +46,9 @@
 <script>
 export default {
 	name: "Controls",
+	props: {
+		stopPlayer: Boolean
+	},
 	data() {
 		return {
 			interval: 1000,
@@ -71,12 +74,15 @@ export default {
 		}
 	},
 	mounted() {
-		this.player = setInterval(() => {
-			this.$emit("nextDay");
-		}, this.interval);
+		this.play();
 	},
 	beforeDestroy() {
 		clearInterval(this.player);
+	},
+	watch: {
+		stopPlayer() {
+			this.stop();
+		}
 	}
 };
 </script>

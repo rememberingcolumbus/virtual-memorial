@@ -51,7 +51,7 @@ export default {
 	name: "cbus-remembers",
 	data() {
 		return {
-			color: "blue",
+			color: "#30f",
 			dataURL: "http://covid.maxheckel.me/api/counties/deaths?counties=",
 			counties: [
 				"Franklin",

@@ -15,14 +15,6 @@ export default {
 		star: Object,
 		imageCBUS: HTMLImageElement
 	},
-	methods: {
-		left() {
-			return Math.floor(Math.random() * this.skyWidth) + this.leftSide;
-		},
-		top() {
-			return Math.floor(Math.random() * this.skyHeight * 0.7) + this.topSide;
-		}
-	},
 	computed: {
 		skyWidth() {
 			return this.imageCBUS?.getBoundingClientRect().width || 400;
@@ -36,14 +28,22 @@ export default {
 		topSide() {
 			return this.imageCBUS?.getBoundingClientRect().top || 0;
 		}
+	},
+	methods: {
+		left() {
+			return Math.floor(Math.random() * this.skyWidth) + this.leftSide;
+		},
+		top() {
+			return Math.floor(Math.random() * this.skyHeight * 0.7) + this.topSide;
+		}
 	}
 };
 </script>
 <style>
 .old-star {
 	position: absolute;
-	width: 2px;
-	height: 2px;
+	width: 1px;
+	height: 1px;
 	background: white;
 	z-index: 20;
 }

@@ -5,22 +5,38 @@
 				:newDeaths="activeDay.newDeaths"
 				:totalDeaths="activeDay.cumulativeDeaths"
 			/>
-			<v-card-title class="d-flex justify-space-between">
-				<v-col class="text-center"><span>Date</span></v-col>
-				<v-col class="text-center"><span>New Deaths</span></v-col>
-				<v-col class="text-center"><span>Cumulative Deaths</span></v-col>
-			</v-card-title>
-			<v-card-subtitle class="d-flex justify-space-between">
-				<v-col class="text-center"
-					><span class="title">{{ displayDate }}</span></v-col
-				>
-				<v-col class="text-center"
-					><span class="title">{{ activeDay.newDeaths }}</span></v-col
-				>
-				<v-col class="text-center"
-					><span class="title">{{ activeDay.cumulativeDeaths }}</span></v-col
-				>
-			</v-card-subtitle>
+			<v-row class="d-flex justify-space-around">
+				<v-col cols="12" md="4" class="text-center py-0 py-sm-1">
+					<v-card-title
+						class="justify-center text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4"
+						>Date</v-card-title
+					>
+					<v-card-subtitle
+						class="text-md-subtitle-1 text-md-h6 text-lg-h5 text-xl-h4 pb-0"
+						>{{ displayDate }}</v-card-subtitle
+					>
+				</v-col>
+				<v-col cols="12" sm="6" md="4" class="text-center py-0 py-sm-1">
+					<v-card-title
+						class="justify-center text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4"
+						>New Deaths</v-card-title
+					>
+					<v-card-subtitle
+						class="text-md-subtitle-1 text-md-h6 text-lg-h5 text-xl-h4 pb-0"
+						>{{ activeDay.newDeaths }}</v-card-subtitle
+					>
+				</v-col>
+				<v-col cols="12" sm="6" md="4" class="text-center py-0 py-sm-1">
+					<v-card-title
+						class="justify-center text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4"
+						>Cumulative Deaths</v-card-title
+					>
+					<v-card-subtitle
+						class="text-md-subtitle-1 text-md-h6 text-lg-h6 text-xl-h4 pb-0"
+						>{{ activeDay.cumulativeDeaths }}</v-card-subtitle
+					>
+				</v-col>
+			</v-row>
 			<v-container width="80%">
 				<v-slider
 					v-model="selectedDay"
@@ -177,3 +193,8 @@ export default {
 	}
 };
 </script>
+<style>
+div.v-card__title {
+	word-break: normal;
+}
+</style>

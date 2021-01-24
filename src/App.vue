@@ -1,6 +1,6 @@
 <template>
 	<v-app id="app">
-		<v-card class="mx-auto" elevation="3">
+		<v-card class="ma-1" elevation="2">
 			<starfield
 				:newDeaths="activeDay.newDeaths"
 				:totalDeaths="activeDay.cumulativeDeaths"

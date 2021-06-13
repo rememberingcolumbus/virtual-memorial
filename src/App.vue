@@ -8,7 +8,10 @@
 			<v-row class="d-flex justify-space-around">
 				<v-col cols="12" md="4" class="text-center py-0 py-sm-1">
 					<v-card-title
-						class="justify-center text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4"
+						class="
+							justify-center
+							text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4
+						"
 						>Date</v-card-title
 					>
 					<v-card-subtitle
@@ -18,7 +21,10 @@
 				</v-col>
 				<v-col cols="12" sm="6" md="4" class="text-center py-0 py-sm-1">
 					<v-card-title
-						class="justify-center text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4"
+						class="
+							justify-center
+							text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4
+						"
 						>New Deaths</v-card-title
 					>
 					<v-card-subtitle
@@ -28,7 +34,10 @@
 				</v-col>
 				<v-col cols="12" sm="6" md="4" class="text-center py-0 py-sm-1">
 					<v-card-title
-						class="justify-center text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4"
+						class="
+							justify-center
+							text-subtitle-2 text-sm-subtitle-1 text-md-h5 text-lg-h4
+						"
 						>Cumulative Deaths</v-card-title
 					>
 					<v-card-subtitle
@@ -163,7 +172,9 @@ export default {
 			});
 		},
 		sortDaysAscending(array) {
-			return array.sort((a, b) => new Date(a.date) - new Date(b.date));
+			const filteredArray = array.filter(day => day.date < Date("2020-01-01"));
+			console.log(filteredArray);
+			return filteredArray.sort((a, b) => new Date(a.date) - new Date(b.date));
 		},
 		nextDay() {
 			if (this.selectedDay < this.dateCountTotals.length - 1) {
@@ -175,18 +186,24 @@ export default {
 		},
 		skipToEnd() {
 			this.selectedDay = this.dateCountTotals.length - 1;
+		},
+		async getDataFromSheet() {
+			return await axios.get(
+				"https://sheet.best/api/sheets/94f6f216-b70c-42f0-82dd-f917ca394a85?_raw=1"
+			);
 		}
 	},
 	async created() {
 		this.dailyDeaths = this.compressDeathData(backupData);
 
-		const proxyURL = "https://cors-anywhere.herokuapp.com/";
-		const requestedURL = this.dataURL + this.counties.join(",");
+		// const proxyURL = "https://cors-anywhere.herokuapp.com/";
+		// const requestedURL = this.dataURL + this.counties.join(",");
 		try {
-			// const response = await axios.get(requestedURL);
+			// const response = await axios.get(proxyURL + requestedURL);
 			// this.dailyDeaths = this.compressDeathData(response.data);
-			const response = await axios.get(proxyURL + requestedURL);
-			this.dailyDeaths = this.compressDeathData(response.data);
+			const sheetsData = await this.getDataFromSheet();
+			// console.log(sheetsData.data);
+			this.dailyDeaths = this.sortDaysAscending(sheetsData.data);
 		} catch (error) {
 			console.error(error.message);
 		}

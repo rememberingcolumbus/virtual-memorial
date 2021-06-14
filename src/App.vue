@@ -189,7 +189,7 @@ export default {
 		},
 		async getDataFromSheet() {
 			return await axios.get(
-				"https://cors-anywhere.herokuapp.com/https://sheet.best/api/sheets/94f6f216-b70c-42f0-82dd-f917ca394a85?_raw=1"
+				"https://sheet.best/api/sheets/94f6f216-b70c-42f0-82dd-f917ca394a85?_raw=1"
 			);
 		}
 	},

@@ -173,7 +173,6 @@ export default {
 		},
 		sortDaysAscending(array) {
 			const filteredArray = array.filter(day => day.date < Date("2020-01-01"));
-			console.log(filteredArray);
 			return filteredArray.sort((a, b) => new Date(a.date) - new Date(b.date));
 		},
 		nextDay() {

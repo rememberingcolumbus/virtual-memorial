@@ -58,7 +58,7 @@ export default {
 	methods: {
 		play() {
 			this.player = setInterval(() => {
-				this.$emit("nextDay");
+				this.$emit("nextWeek");
 			}, this.interval);
 		},
 		stop() {

@@ -57,7 +57,7 @@
 				</v-slider>
 				<controls
 					:stopPlayer="selectedWeek >= weeklyDeaths.length - 1"
-					@nextDay="nextWeek()"
+					@nextWeek="nextWeek()"
 					@skipToStart="skipToStart()"
 					@skipToEnd="skipToEnd()"
 				/>
@@ -170,10 +170,10 @@ export default {
 		// 		return this.countyReducer(county.days);
 		// 	});
 		// },
-		sortDaysAscending(array) {
-			// const filteredArray = array.filter(day => day.date < Date("2020-01-01"));
-			return array.sort((a, b) => new Date(a.Week) - new Date(b.Week));
-		},
+		// sortDaysAscending(array) {
+		// 	// const filteredArray = array.filter(day => day.date < Date("2020-01-01"));
+		// 	return array.sort((a, b) => new Date(a.Week) - new Date(b.Week));
+		// },
 		nextWeek() {
 			if (this.selectedWeek < this.weeklyDeaths.length - 1) {
 				this.selectedWeek++;
@@ -200,7 +200,7 @@ export default {
 			// const response = await axios.get(proxyURL + requestedURL);
 			// this.dailyDeaths = this.compressDeathData(response.data);
 			const sheetsData = await this.getDataFromSheet();
-			this.weeklyDeaths = this.sortDaysAscending(sheetsData.data);
+			this.weeklyDeaths = sheetsData.data;
 		} catch (error) {
 			console.error(error.message);
 		}

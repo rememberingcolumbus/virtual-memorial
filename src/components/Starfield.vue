@@ -2,14 +2,14 @@
 	<div>
 		<img :src="cbusIMG" alt="Columbus Skyline" width="100%" ref="cbusIMG" />
 		<star
-			v-for="(star, i) in newDeaths"
+			v-for="(star, i) in Count"
 			:key="i"
 			:star="newStar()"
 			:imageCBUS="$refs.cbusIMG"
 		/>
 		<star
-			v-for="(star, i) in totalDeaths - newDeaths"
-			:key="i + newDeaths"
+			v-for="(star, i) in Cumulative - Count"
+			:key="i + Count"
 			:star="totalStar()"
 			:imageCBUS="$refs.cbusIMG"
 		/>
@@ -24,8 +24,8 @@ export default {
 	components: { Star },
 	name: "starfield",
 	props: {
-		newDeaths: Number,
-		totalDeaths: Number
+		Count: String,
+		Cumulative: String
 	},
 	data() {
 		return {

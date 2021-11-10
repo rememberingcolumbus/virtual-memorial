@@ -78,21 +78,6 @@ export default {
 	data() {
 		return {
 			color: "#30f",
-			// dataURL: "http://covid.maxheckel.me/api/counties/deaths?counties=",
-			// counties: [
-			// 	"Franklin",
-			// 	"Delaware",
-			// 	"Hocking",
-			// 	"Fairfield",
-			// 	"Knox",
-			// 	"Licking",
-			// 	"Morrow",
-			// 	"Madison",
-			// 	"Marion",
-			// 	"Perry",
-			// 	"Pickaway",
-			// 	"Union"
-			// ],
 			weeklyDeaths: [],
 			selectedWeek: 0
 		};
@@ -101,18 +86,6 @@ export default {
 		activeWeek() {
 			return this.weeklyDeaths[this.selectedWeek];
 		},
-		// dateCountTotals() {
-		// 	let cumulativeTotal = 0;
-
-		// 	return this.dailyDeaths.map(day => {
-		// 		cumulativeTotal += day.count;
-		// 		return {
-		// 			date: day.date,
-		// 			newDeaths: day.count,
-		// 			cumulativeDeaths: cumulativeTotal
-		// 		};
-		// 	});
-		// },
 		displayWeek() {
 			return new Date(this.activeWeek?.Week).toLocaleDateString("en-US", {
 				year: "numeric",
@@ -122,58 +95,6 @@ export default {
 		}
 	},
 	methods: {
-		// addCountyToCentralOhioTotals(dailyDeathsByCounty) {
-		// 	const totalsForCentralOhioObj = {};
-
-		// 	dailyDeathsByCounty.forEach(county => {
-		// 		for (let [key, value] of Object.entries(county)) {
-		// 			if (!totalsForCentralOhioObj[key]) {
-		// 				totalsForCentralOhioObj[key] = value;
-		// 			} else {
-		// 				totalsForCentralOhioObj[key] += value;
-		// 			}
-		// 		}
-		// 	});
-
-		// 	return totalsForCentralOhioObj;
-		// },
-		// compressDeathData(data) {
-		// 	const dateDeathCountByCounty = this.getDaysFromData(data.counties);
-		// 	const centralOhioTotalsObj = this.addCountyToCentralOhioTotals(
-		// 		dateDeathCountByCounty
-		// 	);
-
-		// 	const result = [];
-		// 	for (let [key, value] of Object.entries(centralOhioTotalsObj)) {
-		// 		result.push({
-		// 			date: key,
-		// 			count: value
-		// 		});
-		// 	}
-		// 	return this.sortDaysAscending(result);
-		// },
-		// countyReducer(dailyCountArray) {
-		// 	if (dailyCountArray) {
-		// 		return dailyCountArray.reduce((acc, day) => {
-		// 			if (!acc[day.date]) {
-		// 				acc[day.date] = day.count;
-		// 			} else {
-		// 				acc[day.date] = day.count;
-		// 			}
-		// 			return acc;
-		// 		}, {});
-		// 	}
-		// 	return [];
-		// },
-		// getDaysFromData(counties) {
-		// 	return counties.map(county => {
-		// 		return this.countyReducer(county.days);
-		// 	});
-		// },
-		// sortDaysAscending(array) {
-		// 	// const filteredArray = array.filter(day => day.date < Date("2020-01-01"));
-		// 	return array.sort((a, b) => new Date(a.Week) - new Date(b.Week));
-		// },
 		nextWeek() {
 			if (this.selectedWeek < this.weeklyDeaths.length - 1) {
 				this.selectedWeek++;
@@ -193,12 +114,7 @@ export default {
 	},
 	async created() {
 		this.weeklyDeaths = backupData;
-
-		// const proxyURL = "https://cors-anywhere.herokuapp.com/";
-		// const requestedURL = this.dataURL + this.counties.join(",");
 		try {
-			// const response = await axios.get(proxyURL + requestedURL);
-			// this.dailyDeaths = this.compressDeathData(response.data);
 			const sheetsData = await this.getDataFromSheet();
 			this.weeklyDeaths = sheetsData.data;
 		} catch (error) {

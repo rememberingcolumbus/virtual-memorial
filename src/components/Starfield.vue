@@ -2,13 +2,13 @@
 	<div>
 		<img :src="cbusIMG" alt="Columbus Skyline" width="100%" ref="cbusIMG" />
 		<star
-			v-for="(star, i) in Count"
+			v-for="(star, i) in countDividedBy100"
 			:key="i"
 			:star="newStar()"
 			:imageCBUS="$refs.cbusIMG"
 		/>
 		<star
-			v-for="(star, i) in Cumulative - Count"
+			v-for="(star, i) in cumulativeDividedBy100 - countDividedBy100"
 			:key="i + Count"
 			:star="totalStar()"
 			:imageCBUS="$refs.cbusIMG"
@@ -32,6 +32,16 @@ export default {
 			cbusIMG: cbusIMG,
 			imageBox: {}
 		};
+	},
+	computed: {
+		countDividedBy100() {
+			dividedBy100 = Math.round(this.Count / 100)
+			return dividedBy100 > 0 ? dividedBy100 : 0
+		},
+		cumulativeDividedBy100() {
+			dividedBy100 = Math.round(this.Cumulative / 100)
+			return dividedBy100 > 0 ? dividedBy100 : 0
+		}
 	},
 	methods: {
 		totalStar() {
